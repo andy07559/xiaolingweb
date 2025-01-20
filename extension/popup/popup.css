@@ -741,4 +741,64 @@ button:disabled {
     border-color: #8ab4f8;
     box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.1);
   }
+}
+
+.url-input-container {
+  margin-bottom: 16px;
+}
+
+.url-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.url-input:focus {
+  border-color: #1a73e8;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+}
+
+.action-buttons-container {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.primary-button {
+  background-color: #1a73e8;
+  color: white;
+  font-weight: 500;
+}
+
+.primary-button:hover {
+  background-color: #1557b0;
+}
+
+.divider {
+  margin: 12px 0;
+  color: #666;
+  font-size: 14px;
+  position: relative;
+  text-align: center;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 45%;
+  height: 1px;
+  background-color: #ddd;
+}
+
+.divider::before {
+  left: 0;
+}
+
+.divider::after {
+  right: 0;
 } 

@@ -34,6 +34,8 @@ const textToTranslate = document.getElementById('textToTranslate');
 const pasteBtn = document.getElementById('pasteBtn');
 const clearBtn = document.getElementById('clearBtn');
 const translateTextBtn = document.getElementById('translateTextBtn');
+const urlInput = document.getElementById('urlInput');
+const oneClickBtn = document.getElementById('oneClickBtn');
 
 // 状态变量
 let currentTab = null;
@@ -79,6 +81,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     currentTab = tabs[0];
 
+    // 设置URL输入框的默认值为当前页面URL
+    urlInput.value = currentTab.url;
+    
     // 检查缓存
     const cache = await chrome.storage.local.get('extractionCache');
     const cachedData = cache.extractionCache?.[currentTab.url];
@@ -120,83 +125,119 @@ document.addEventListener('DOMContentLoaded', async () => {
     pasteBtn.addEventListener('click', handlePaste);
     clearBtn.addEventListener('click', handleClear);
     translateTextBtn.addEventListener('click', handleTranslateText);
+    oneClickBtn.addEventListener('click', handleOneClickProcess);
   } catch (error) {
     console.error('Initialization failed:', error);
     showError('初始化失败，请重试');
   }
 });
 
-// 处理提取
-async function handleExtract() {
-  if (extracting || !currentTab?.id) return;
-  
+// 一键处理函数
+async function handleOneClickProcess() {
   try {
-    // 重新获取当前标签页，确保操作的是最新的页面
-    const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (!activeTab || !activeTab.id) {
-      throw new Error('无法获取当前页面信息');
+    showProgress('正在提取内容...', 25);
+    
+    // 获取URL
+    const url = urlInput.value.trim() || currentTab.url;
+    
+    // 1. 提取内容
+    const extractResult = await sendMessageToContentScript(currentTab.id, {
+      type: 'EXTRACT_CONTENT',
+      format: 'text'
+    });
+    
+    if (!extractResult.success) {
+      throw new Error(extractResult.error || '提取内容失败');
     }
     
-    // 更新当前标签页
-    currentTab = activeTab;
+    showProgress('正在生成AI总结...', 50);
     
-    // 检查页面URL是否有效
-    if (!currentTab.url || currentTab.url.startsWith('chrome://') || currentTab.url.startsWith('edge://')) {
-      throw new Error('无法从此类页面提取内容');
+    // 2. 生成AI总结
+    const prompt = await getCurrentPrompt();
+    const summaryResult = await chrome.runtime.sendMessage({
+      type: 'GENERATE_SUMMARY',
+      content: extractResult.content,
+      prompt: prompt
+    });
+    
+    if (!summaryResult.success) {
+      throw new Error(summaryResult.error || 'AI总结生成失败');
     }
     
-    extracting = true;
-    extractBtn.disabled = true;
-    showProgress('开始提取...', 0);
-    hideError();
-    hideResult();
+    showProgress('正在翻译内容...', 75);
+    
+    // 3. 检测语言并翻译(如果不是中文)
+    const isChineseContent = /[\u4e00-\u9fa5]/.test(extractResult.content);
+    let translatedContent = extractResult.content;
+    
+    if (!isChineseContent) {
+      const translationResult = await sendMessageToContentScript(currentTab.id, {
+        type: 'TRANSLATE_CONTENT',
+        content: extractResult.content,
+        targetLang: 'zh'
+      });
+      
+      if (!translationResult.success) {
+        throw new Error(translationResult.error || '翻译失败');
+      }
+      
+      translatedContent = translationResult.content;
+    }
+    
+    showProgress('完成处理', 100);
+    
+    // 显示结果
+    showResult(translatedContent);
+    showSummary(summaryResult.summary);
+    showAnalysis(extractResult.analysis);
+    
+    // 隐藏进度条
+    setTimeout(() => {
+      hideProgress();
+    }, 1000);
+    
+  } catch (error) {
+    console.error('One-click process failed:', error);
+    showError(getErrorMessage(error));
+    hideProgress();
+  }
+}
 
-    // 发送消息给content script
+// 修改现有的handleExtract函数以支持自定义URL
+async function handleExtract() {
+  try {
+    showProgress('正在提取内容...', 50);
+    
+    // 获取URL
+    const url = urlInput.value.trim() || currentTab.url;
+    
     const response = await sendMessageToContentScript(currentTab.id, {
       type: 'EXTRACT_CONTENT',
-      format: formatSelect.value,
-      url: currentTab.url // 添加URL信息用于验证
+      format: formatSelect.value
     });
-
+    
     if (!response.success) {
-      throw new Error(response.error || '提取失败');
+      throw new Error(response.error || '提取内容失败');
     }
-
-    // 验证返回的内容
-    if (!response.content || response.content.trim().length === 0) {
-      throw new Error('提取的内容为空，请检查页面是否加载完成');
-    }
-
+    
     showResult(response.content);
     if (response.analysis) {
       showAnalysis(response.analysis);
     }
     
-    // 保存媒体内容到缓存
-    if (response.media) {
-      extractedMedia = response.media;
-    }
-    
-    // 缓存结果
-    const cache = await chrome.storage.local.get('extractionCache') || { extractionCache: {} };
-    if (!cache.extractionCache) {
-      cache.extractionCache = {};
-    }
-    
-    cache.extractionCache[currentTab.url] = {
+    // 保存到缓存
+    const cache = await chrome.storage.local.get('extractionCache');
+    cache.extractionCache[url] = {
       content: response.content,
       analysis: response.analysis,
-      media: response.media,
       timestamp: Date.now()
     };
     await chrome.storage.local.set(cache);
-
+    
   } catch (error) {
-    console.error('Extraction failed:', error);
+    console.error('Extract failed:', error);
     showError(getErrorMessage(error));
   } finally {
-    extracting = false;
-    extractBtn.disabled = false;
     hideProgress();
   }
 }

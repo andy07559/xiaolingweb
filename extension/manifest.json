@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "小灵内容提取",
-  "version": "1.0",
+  "version": "2.1",
   "description": "智能提取网页核心内容，支持多种输出格式",
   "permissions": [
     "activeTab",
