@@ -1,246 +1,202 @@
-# Web内容提取工具安装部署指南
+# 小灵内容提取插件安装指南
 
-## 1. 系统要求
+## 目录
+1. [系统要求](#系统要求)
+2. [安装步骤](#安装步骤)
+3. [配置说明](#配置说明)
+4. [更新说明](#更新说明)
+5. [故障排除](#故障排除)
 
-### 1.1 服务器环境
-- 操作系统：Linux/Windows/MacOS
-- Python 3.8+
-- Node.js 16+
-- npm 8+ 或 yarn 1.22+
+## 系统要求
 
-### 1.2 推荐配置
-- CPU: 2核心以上
-- 内存: 4GB以上
-- 硬盘: 20GB以上
-- 网络: 带宽10Mbps以上
+### 浏览器要求
+- Chrome 88+ 或基于Chromium的浏览器
+- Microsoft Edge 88+
+- Opera 74+
 
-## 2. 安装步骤
+### 系统配置
+- 操作系统：Windows 7+/macOS 10.11+/Linux
+- 内存：至少2GB可用内存
+- 磁盘空间：50MB以上可用空间
+- 网络：稳定的网络连接
 
-### 2.1 获取代码
-```bash
-# 克隆代码仓库
-git clone https://github.com/eggacheb/web-content-extractor.git
-cd web-content-extractor
-```
+## 安装步骤
 
-### 2.2 后端环境配置
-```bash
-# 创建Python虚拟环境
-python -m venv venv
+### 方式一：通过Chrome网上应用店安装
 
-# 激活虚拟环境
-# Windows:
-venv\Scripts\activate
-# Linux/MacOS:
-source venv/bin/activate
+1. 打开Chrome网上应用店
+2. 搜索"小灵内容提取"
+3. 点击"添加到Chrome"
+4. 确认安装权限
+5. 等待安装完成
 
-# 安装Python依赖
-pip install -r requirements.txt
-```
+### 方式二：手动安装（开发版）
 
-### 2.3 前端环境配置
-```bash
-# 安装Node.js依赖
-npm install
-# 或使用yarn
-yarn install
-```
+1. 下载插件源码
+   ```bash
+   git clone https://github.com/andy07559/xiaolingweb.git
+   cd xiaolingweb
+   ```
 
-### 2.4 构建前端
-```bash
-# 构建生产环境代码
-npm run build
-# 或使用yarn
-yarn build
-```
+2. 安装依赖
+   ```bash
+   npm install
+   ```
 
-## 3. 部署配置
+3. 构建插件
+   ```bash
+   npm run build
+   ```
 
-### 3.1 开发环境运行
-```bash
-# 启动开发服务器
-npm run dev
-# 或使用yarn
-yarn dev
-```
+4. 在Chrome中加载插件
+   - 打开Chrome扩展程序页面 (chrome://extensions/)
+   - 开启"开发者模式"
+   - 点击"加载已解压的扩展程序"
+   - 选择构建输出目录 (dist)
 
-### 3.2 生产环境部署
+## 配置说明
 
-#### 方案一：使用 PM2 部署（推荐）
-```bash
-# 安装PM2
-npm install -g pm2
+### API密钥配置
 
-# 启动服务
-pm2 start npm --name "web-extractor" -- start
+1. 获取API密钥
+   - 访问DeepSeek官网
+   - 注册/登录账号
+   - 在控制台创建API密钥
 
-# 查看运行状态
-pm2 status
+2. 配置API密钥
+   - 点击插件图标
+   - 点击设置按钮
+   - 输入API密钥
+   - 点击保存
+   - 测试连接
 
-# 查看日志
-pm2 logs web-extractor
-```
+### 插件权限配置
 
-#### 方案二：使用 Docker 部署
-```bash
-# 构建Docker镜像
-docker build -t web-extractor .
+1. 必需权限
+   - 网页内容访问权限
+   - 存储权限
+   - 剪贴板访问权限
 
-# 运行容器
-docker run -d -p 3000:3000 --name web-extractor web-extractor
+2. 可选权限
+   - 下载权限（用于保存提取内容）
+   - 通知权限（用于显示操作结果）
 
-# 查看容器状态
-docker ps
+### 自定义设置
 
-# 查看日志
-docker logs web-extractor
-```
+1. AI总结设置
+   - 选择默认总结风格
+   - 配置自定义提示词
+   - 设置输出格式偏好
 
-## 4. 配置说明
+2. 翻译设置
+   - 设置默认目标语言
+   - 配置翻译风格
+   - 调整字体大小
 
-### 4.1 环境变量配置
-创建 `.env` 文件在项目根目录：
-```env
-# 服务器端口
-PORT=3000
+## 更新说明
 
-# API超时设置（毫秒）
-API_TIMEOUT=15000
+### 自动更新
+- 插件将自动检查并下载更新
+- 更新完成后会提示重启浏览器
+- 可在扩展程序页面查看当前版本
 
-# 允许的来源域名，多个域名用逗号分隔
-ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
-```
+### 手动更新
+1. 访问GitHub仓库
+2. 下载最新版本
+3. 解压文件
+4. 替换原有文件
+5. 重启浏览器
 
-### 4.2 Nginx反向代理配置
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
+## 故障排除
 
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-```
+### 常见安装问题
 
-## 5. 安全配置
+1. 安装失败
+   - 检查浏览器版本是否满足要求
+   - 确认是否有足够的磁盘空间
+   - 清理浏览器缓存后重试
+   - 检查网络连接
 
-### 5.1 防火墙设置
-```bash
-# 仅开放必要端口
-sudo ufw allow 80
-sudo ufw allow 443
-sudo ufw enable
-```
+2. 权限错误
+   - 确认已授予必要权限
+   - 重新安装插件
+   - 检查浏览器安全设置
 
-### 5.2 SSL证书配置（推荐）
-```bash
-# 安装certbot
-sudo apt-get install certbot python3-certbot-nginx
+3. API配置问题
+   - 验证API密钥是否正确
+   - 检查API调用限制
+   - 确认网络能访问API服务器
 
-# 获取SSL证书
-sudo certbot --nginx -d your-domain.com
-```
+### 解决方案
 
-## 6. 维护指南
+1. 插件无法加载
+   ```
+   解决步骤：
+   1. 禁用插件
+   2. 清除浏览器缓存
+   3. 重新启用插件
+   4. 重启浏览器
+   ```
 
-### 6.1 日常维护
-```bash
-# 更新代码
-git pull origin main
+2. 功能无法使用
+   ```
+   解决步骤：
+   1. 检查API配置
+   2. 验证网络连接
+   3. 查看控制台错误信息
+   4. 重新安装最新版本
+   ```
 
-# 更新依赖
-npm install
-pip install -r requirements.txt
+3. 性能问题
+   ```
+   解决步骤：
+   1. 清理插件缓存
+   2. 检查内存使用
+   3. 关闭不必要的标签页
+   4. 更新到最新版本
+   ```
 
-# 重新构建
-npm run build
+## 技术支持
 
-# 重启服务
-pm2 restart web-extractor
-```
+如遇到安装或使用问题：
+1. 查看本安装指南
+2. 访问GitHub Issues页面
+3. 提交问题反馈
+4. 联系技术支持
 
-### 6.2 日志管理
-```bash
-# 查看应用日志
-pm2 logs web-extractor
+## 安全提示
 
-# 清理日志
-pm2 flush
-```
+1. 下载来源
+   - 仅从官方渠道下载插件
+   - 验证插件签名
+   - 检查插件权限
 
-### 6.3 性能监控
-```bash
-# 查看系统资源使用情况
-pm2 monit
-```
+2. API密钥安全
+   - 妥善保管API密钥
+   - 定期更新密钥
+   - 不要分享密钥
 
-## 7. 故障排除
+3. 数据安全
+   - 及时清理缓存
+   - 注意敏感信息处理
+   - 遵循数据保护规范
 
-### 7.1 常见问题
-1. 端口被占用
-```bash
-# 查看端口占用
-lsof -i :3000
-# 终止进程
-kill -9 <PID>
-```
+## 维护建议
 
-2. 依赖安装失败
-```bash
-# 清理npm缓存
-npm cache clean --force
-# 重新安装依赖
-npm install
-```
+1. 定期维护
+   - 更新到最新版本
+   - 清理插件缓存
+   - 检查API密钥状态
+   - 备份重要配置
 
-### 7.2 错误日志位置
-- PM2日志：`~/.pm2/logs/`
-- Nginx日志：`/var/log/nginx/`
-- 应用日志：`./logs/`
+2. 性能优化
+   - 定期清理浏览器缓存
+   - 关闭不必要的功能
+   - 监控资源使用情况
 
-## 8. 更新维护
+3. 问题预防
+   - 保持系统更新
+   - 定期检查配置
+   - 备份重要数据
 
-### 8.1 自动更新脚本
-创建 `update.sh`:
-```bash
-#!/bin/bash
-git pull
-npm install
-pip install -r requirements.txt
-npm run build
-pm2 restart web-extractor
-```
-
-### 8.2 定期维护建议
-- 每周检查日志文件
-- 每月更新依赖包
-- 每季度进行性能评估
-- 定期备份数据和配置
-
-## 9. 备份策略
-
-### 9.1 配置文件备份
-```bash
-# 创建备份目录
-mkdir -p /backup/web-extractor
-
-# 备份配置文件
-cp .env /backup/web-extractor/
-cp nginx.conf /backup/web-extractor/
-```
-
-### 9.2 自动备份脚本
-创建 `backup.sh`:
-```bash
-#!/bin/bash
-DATE=$(date +%Y%m%d)
-BACKUP_DIR="/backup/web-extractor/$DATE"
-mkdir -p $BACKUP_DIR
-cp -r .env nginx.conf $BACKUP_DIR
-``` 
+感谢选择小灵内容提取插件！如有任何问题，欢迎随时反馈。 
