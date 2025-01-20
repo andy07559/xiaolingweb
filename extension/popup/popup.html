@@ -61,6 +61,17 @@
 
         <button id="extractBtn">提取内容</button>
 
+        <!-- 添加文本翻译区域 -->
+        <div id="textTranslateContainer" class="text-translate-container">
+          <h3>文本翻译</h3>
+          <textarea id="textToTranslate" placeholder="在此输入要翻译的文本..."></textarea>
+          <div class="text-translate-actions">
+            <button id="pasteBtn">粘贴</button>
+            <button id="clearBtn">清空</button>
+            <button id="translateTextBtn">翻译</button>
+          </div>
+        </div>
+
         <div id="errorMessage" class="error-message" style="display: none;"></div>
 
         <div id="resultContainer" class="result-container" style="display: none;">
@@ -69,7 +80,34 @@
             <button id="downloadBtn">下载文件</button>
             <button id="summaryBtn">AI总结</button>
           </div>
+          
+          <!-- 添加分析结果区域 -->
+          <div id="analysisContainer" class="analysis-container">
+            <div class="analysis-header">
+              <h3>内容分析</h3>
+            </div>
+            <div class="analysis-content">
+              <div class="analysis-item">
+                <span class="label">文章主题：</span>
+                <span id="topicResult"></span>
+              </div>
+              <div class="analysis-item">
+                <span class="label">关键词：</span>
+                <div id="keywordsResult" class="keywords-container"></div>
+              </div>
+              <div class="analysis-item">
+                <span class="label">字数统计：</span>
+                <span id="wordCountResult"></span>
+              </div>
+              <div class="analysis-item">
+                <span class="label">预计阅读时间：</span>
+                <span id="readingTimeResult"></span>
+              </div>
+            </div>
+          </div>
+
           <pre id="resultContent" class="result-content"></pre>
+          
           <div id="summaryContainer" class="summary-container" style="display: none;">
             <h3>AI总结</h3>
             <div id="summaryContent" class="summary-content"></div>
