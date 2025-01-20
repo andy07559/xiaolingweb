@@ -1,0 +1,46 @@
+name: Upstream Sync
+
+permissions:
+  contents: write
+  issues: write
+  actions: write
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'    # 每6小时运行一次
+  workflow_dispatch:          # 允许手动触发
+  
+jobs:
+  sync_latest_from_upstream:
+    name: Sync latest commits from upstream repo
+    runs-on: ubuntu-latest
+    if: ${{ github.event.repository.fork }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Clean issue notice
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'close-issues'
+          labels: '🚨 Sync Fail'
+          
+      - name: Sync upstream changes
+        id: sync
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
+        with:
+          upstream_sync_repo: eggacheb/Magic-HTML-API    # 已更新为正确的上游仓库
+          upstream_sync_branch: main
+          target_sync_branch: main
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Sync check
+        if: failure()
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'create-issue'
+          title: '🚨 同步失败 | Sync Fail'
+          labels: '🚨 Sync Fail'
+          body: |
+            同步过程中发生错误，请手动同步一次。
+            An error occurred during synchronization. Please sync manually. 
