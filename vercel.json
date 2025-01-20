@@ -1,0 +1,33 @@
+{
+    "version": 2,
+    "functions": {
+        "api/**/*.py": {
+            "maxDuration": 60,
+            "memory": 1024
+        }
+    },
+    "routes": [
+        {
+            "src": "/api/extract",
+            "dest": "api/extract.py",
+            "methods": ["GET"],
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET",
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Cache-Control": "no-cache, no-store, must-revalidate"
+            }
+        },
+        {
+            "src": "/api/(.*)",
+            "dest": "api/extract.py"
+        },
+        {
+            "handle": "filesystem"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/"
+        }
+    ]
+} 

@@ -1,0 +1,276 @@
+body {
+  width: 400px;
+  min-height: 300px;
+  margin: 0;
+  padding: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.popup-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+header {
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+h1 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.format-selector {
+  margin-bottom: 16px;
+}
+
+select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+button {
+  width: 100%;
+  padding: 8px 16px;
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #1557b0;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  margin: 16px 0;
+  padding: 8px;
+  background-color: #fde7e9;
+  border: 1px solid #ffa7ae;
+  border-radius: 4px;
+  color: #d32f2f;
+}
+
+.result-container {
+  margin-top: 16px;
+}
+
+.result-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.result-actions button {
+  flex: 1;
+}
+
+.result-content {
+  padding: 8px;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.progress-container {
+  margin-top: 16px;
+}
+
+.progress-bar {
+  height: 4px;
+  background-color: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-bar::before {
+  content: '';
+  display: block;
+  height: 100%;
+  background-color: #1a73e8;
+  width: var(--progress, 0%);
+  transition: width 0.2s;
+}
+
+.progress-message {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+}
+
+.summary-container {
+  margin-top: 16px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+}
+
+.summary-container h3 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #495057;
+}
+
+.summary-content {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #212529;
+  white-space: pre-wrap;
+}
+
+#summaryBtn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+#summaryBtn:hover {
+  background-color: #218838;
+}
+
+#summaryBtn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.icon-button {
+  width: auto;
+  padding: 4px 8px;
+  background: none;
+  color: #666;
+  font-size: 16px;
+}
+
+.icon-button:hover {
+  background: #f5f5f5;
+}
+
+.settings-panel {
+  background: white;
+  padding: 16px;
+}
+
+.settings-panel h2 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.settings-form {
+  margin-bottom: 16px;
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: #666;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.api-key-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #666;
+  margin-top: 8px;
+}
+
+#testApiKeyBtn {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+#closeSettingsBtn {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.form-group + .form-group {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.form-group textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+}
+
+.form-group textarea:focus {
+  border-color: #1a73e8;
+  outline: none;
+}
+
+#promptSelect {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.summary-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.summary-actions button {
+  flex: 1;
+  background-color: #28a745;
+}
+
+.summary-actions button:hover {
+  background-color: #218838;
+} 

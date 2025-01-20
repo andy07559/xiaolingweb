@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG to PNG Converter</title>
+  <style>
+    .preview {
+      margin: 20px 0;
+      padding: 10px;
+      border: 1px solid #eee;
+      border-radius: 4px;
+    }
+    .preview img {
+      display: block;
+      margin-bottom: 10px;
+    }
+    .preview canvas {
+      display: block;
+      margin: 10px 0;
+    }
+    button {
+      padding: 8px 16px;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1557b0;
+    }
+  </style>
+</head>
+<body>
+  <h1>图标转换工具</h1>
+  
+  <div class="preview">
+    <h2>16x16 图标</h2>
+    <img src="icon16.svg" width="16" height="16" id="svg16" alt="16x16图标预览">
+    <canvas id="canvas16" width="16" height="16"></canvas>
+    <button onclick="convertToPNG(16)">转换为16x16 PNG</button>
+  </div>
+  
+  <div class="preview">
+    <h2>48x48 图标</h2>
+    <img src="icon48.svg" width="48" height="48" id="svg48" alt="48x48图标预览">
+    <canvas id="canvas48" width="48" height="48"></canvas>
+    <button onclick="convertToPNG(48)">转换为48x48 PNG</button>
+  </div>
+  
+  <div class="preview">
+    <h2>128x128 图标</h2>
+    <img src="icon128.svg" width="128" height="128" id="svg128" alt="128x128图标预览">
+    <canvas id="canvas128" width="128" height="128"></canvas>
+    <button onclick="convertToPNG(128)">转换为128x128 PNG</button>
+  </div>
+
+  <script>
+    // 等待所有SVG加载完成
+    window.addEventListener('load', () => {
+      [16, 48, 128].forEach(size => {
+        const svg = document.getElementById(`svg${size}`);
+        svg.onload = () => convertToPNG(size);
+      });
+    });
+
+    function convertToPNG(size) {
+      const svg = document.getElementById(`svg${size}`);
+      const canvas = document.getElementById(`canvas${size}`);
+      const ctx = canvas.getContext('2d');
+      
+      // 清除画布
+      ctx.clearRect(0, 0, size, size);
+      
+      // 绘制SVG
+      ctx.drawImage(svg, 0, 0, size, size);
+      
+      // 转换为PNG并下载
+      const link = document.createElement('a');
+      link.download = `icon${size}.png`;
+      link.href = canvas.toDataURL('image/png');
+      
+      // 自动下载
+      if (window.autoDownload) {
+        link.click();
+      }
+      
+      // 返回数据URL，方便后续使用
+      return link.href;
+    }
+
+    // 设置自动下载标志
+    window.autoDownload = false;
+  </script>
+</body>
+</html> 

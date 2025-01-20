@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景圆形 -->
+  <circle cx="64" cy="64" r="60" fill="#1a73e8"/>
+  
+  <!-- 发光效果 -->
+  <circle cx="64" cy="64" r="56" fill="white" fill-opacity="0.1"/>
+  
+  <!-- 文档外框 -->
+  <rect x="32" y="24" width="44" height="80" rx="4" fill="white"/>
+  
+  <!-- 文档内容线条 -->
+  <path d="M40 40h28v4H40zM40 52h28v4H40zM40 64h28v4H40zM40 76h20v4H40z" fill="#1a73e8"/>
+  
+  <!-- 提取箭头 -->
+  <path d="M84 64l20-16v32z" fill="white"/>
+  
+  <!-- 装饰元素 -->
+  <circle cx="94" cy="64" r="3" fill="#1a73e8"/>
+  <circle cx="64" cy="64" r="32" fill="none" stroke="white" stroke-opacity="0.2" stroke-width="2"/>
+</svg> 

@@ -1,0 +1,7 @@
+fastapi==0.95.2
+httpx==0.24.1
+uvicorn==0.22.0
+chardet==4.0.0
+./wheels/magic_html-0.1.2-py3-none-any.whl
+markdownify==0.11.6
+beautifulsoup4==4.12.2

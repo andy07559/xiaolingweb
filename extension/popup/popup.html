@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小灵内容提取</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <header>
+      <h1>小灵内容提取</h1>
+      <button id="settingsBtn" class="icon-button">⚙️</button>
+    </header>
+
+    <main>
+      <!-- 设置面板 -->
+      <div id="settingsPanel" class="settings-panel" style="display: none;">
+        <h2>设置</h2>
+        <div class="settings-form">
+          <div class="form-group">
+            <label for="apiKeyInput">DeepSeek API Key:</label>
+            <input type="password" id="apiKeyInput" placeholder="输入您的DeepSeek API Key">
+            <button id="saveApiKeyBtn">保存</button>
+          </div>
+          <div class="api-key-status">
+            <span id="apiKeyStatus">未配置</span>
+            <button id="testApiKeyBtn" style="display: none;">测试连接</button>
+          </div>
+          
+          <div class="form-group">
+            <label for="promptSelect">AI总结风格:</label>
+            <select id="promptSelect" aria-label="选择AI总结风格">
+              <option value="default">默认总结</option>
+              <option value="concise">简短精炼</option>
+              <option value="detailed">详细分析</option>
+              <option value="creative">创意解读</option>
+              <option value="academic">学术分析</option>
+              <option value="custom">自定义</option>
+            </select>
+          </div>
+          
+          <div id="customPromptGroup" class="form-group" style="display: none;">
+            <label for="customPromptInput">自定义提示词:</label>
+            <textarea id="customPromptInput" 
+                      placeholder="输入自定义的AI提示词，告诉AI如何总结内容。&#10;例如：请分析文本的主要观点，并按照以下方面总结：&#10;1. 核心论点&#10;2. 支持证据&#10;3. 结论建议"
+                      rows="6"></textarea>
+          </div>
+        </div>
+        <button id="closeSettingsBtn">返回</button>
+      </div>
+
+      <div id="mainContent">
+        <div class="format-selector">
+          <select id="formatSelect" aria-label="选择输出格式">
+            <option value="text">纯文本</option>
+            <option value="html">HTML</option>
+            <option value="markdown">Markdown</option>
+          </select>
+        </div>
+
+        <button id="extractBtn">提取内容</button>
+
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+        <div id="resultContainer" class="result-container" style="display: none;">
+          <div class="result-actions">
+            <button id="copyBtn">复制内容</button>
+            <button id="downloadBtn">下载文件</button>
+            <button id="summaryBtn">AI总结</button>
+          </div>
+          <pre id="resultContent" class="result-content"></pre>
+          <div id="summaryContainer" class="summary-container" style="display: none;">
+            <h3>AI总结</h3>
+            <div id="summaryContent" class="summary-content"></div>
+            <div class="summary-actions">
+              <button id="copySummaryBtn">复制总结</button>
+              <button id="saveSummaryBtn">保存总结</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="progressContainer" class="progress-container" style="display: none;">
+          <div id="progressBar" class="progress-bar"></div>
+          <div id="progressMessage" class="progress-message"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html> 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景圆形 -->
+  <circle cx="8" cy="8" r="7.5" fill="#1a73e8"/>
+  
+  <!-- 文档图标 -->
+  <path d="M5 4h6v1H5zM5 7h6v1H5zM5 10h4v1H5z" fill="white"/>
+  
+  <!-- 提取箭头 -->
+  <path d="M11 8.5l2-2v4z" fill="white"/>
+</svg> 
