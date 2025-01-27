@@ -19,12 +19,15 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
 }
 
 h1 {
   margin: 0;
-  font-size: 18px;
-  color: #333;
+  font-size: 20px;
+  font-weight: bold;
 }
 
 .format-selector {
@@ -165,10 +168,11 @@ button:disabled {
 
 .icon-button {
   width: auto;
-  padding: 4px 8px;
+  padding: 8px;
   background: none;
   color: #666;
   font-size: 16px;
+  border: none;
 }
 
 .icon-button:hover {

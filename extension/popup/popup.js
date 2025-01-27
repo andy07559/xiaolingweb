@@ -78,38 +78,14 @@ async function sendMessageToContentScript(tabId, message) {
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     // 获取当前标签页
-    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-    currentTab = tabs[0];
-
-    // 设置URL输入框的默认值为当前页面URL
-    urlInput.value = currentTab.url;
-    
-    // 检查缓存
-    const cache = await chrome.storage.local.get('extractionCache');
-    const cachedData = cache.extractionCache?.[currentTab.url];
-    
-    if (cachedData) {
-      showResult(cachedData.content);
-      if (cachedData.analysis) {
-        showAnalysis(cachedData.analysis);
-      }
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab?.id) {
+      showError('无法获取当前标签页');
+      return;
     }
+    currentTab = tab;
 
-    // 检查API Key状态
-    const apiKey = await chrome.storage.local.get('openaiApiKey');
-    updateApiKeyStatus(apiKey.openaiApiKey);
-
-    // 检查提示词设置
-    const prompt = await chrome.storage.local.get(['promptType', 'customPrompt']);
-    if (prompt.promptType) {
-      promptSelect.value = prompt.promptType;
-      if (prompt.promptType === 'custom') {
-        customPromptGroup.style.display = 'block';
-        customPromptInput.value = prompt.customPrompt || '';
-      }
-    }
-
-    // 绑定事件
+    // 设置事件监听器
     extractBtn.addEventListener('click', handleExtract);
     copyBtn.addEventListener('click', handleCopy);
     downloadBtn.addEventListener('click', handleDownload);
@@ -119,16 +95,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     saveApiKeyBtn.addEventListener('click', saveApiKey);
     testApiKeyBtn.addEventListener('click', testApiKey);
     promptSelect.addEventListener('change', handlePromptChange);
-    customPromptInput.addEventListener('change', saveCustomPrompt);
     copySummaryBtn.addEventListener('click', handleCopySummary);
     saveSummaryBtn.addEventListener('click', handleSaveSummary);
+    oneClickBtn.addEventListener('click', handleOneClickProcess);
+    
+    // 文本翻译相关的事件监听器
     pasteBtn.addEventListener('click', handlePaste);
     clearBtn.addEventListener('click', handleClear);
     translateTextBtn.addEventListener('click', handleTranslateText);
-    oneClickBtn.addEventListener('click', handleOneClickProcess);
+    
+    // 检查API Key状态
+    const apiKey = await chrome.storage.local.get('openaiApiKey');
+    updateApiKeyStatus(apiKey.openaiApiKey);
+    
+    // 设置当前URL
+    if (tab.url) {
+      urlInput.value = tab.url;
+    }
   } catch (error) {
     console.error('Initialization failed:', error);
-    showError('初始化失败，请重试');
+    showError(getErrorMessage(error));
   }
 });
 
@@ -691,17 +677,29 @@ async function handleTranslate() {
 
 // 显示翻译结果
 function showTranslation(translation) {
+  // 移除现有的翻译结果容器（如果存在）
+  const existingContainer = document.querySelector('.translation-container');
+  if (existingContainer) {
+    existingContainer.remove();
+  }
+  
   const translationContainer = document.createElement('div');
   translationContainer.className = 'translation-container';
   translationContainer.innerHTML = `
     <h3>翻译结果</h3>
     <pre class="translation-content">${translation}</pre>
     <div class="translation-actions">
-      <button onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent)">复制翻译</button>
+      <button onclick="navigator.clipboard.writeText(this.parentElement.previousElementSibling.textContent)">复制翻译</button>
     </div>
   `;
   
-  resultContainer.appendChild(translationContainer);
+  // 如果是从文本框翻译，将结果插入到文本框后面
+  if (document.activeElement === textToTranslate || textToTranslate.value.trim()) {
+    textToTranslate.parentElement.insertBefore(translationContainer, textToTranslate.nextSibling);
+  } else {
+    // 否则添加到结果容器中（用于网页内容翻译）
+    resultContainer.appendChild(translationContainer);
+  }
 }
 
 // 处理媒体内容显示
@@ -804,22 +802,34 @@ async function handleTranslateText() {
   try {
     showProgress('正在翻译...', 0);
     
-    // 获取翻译提示词
-    const response = await chrome.tabs.sendMessage(currentTab.id, {
-      type: 'TRANSLATE_CONTENT',
-      content: content,
-      targetLang: 'zh', // 默认翻译为中文
-      style: 'formal'
-    });
-    
-    if (!response.success) {
-      throw new Error(response.error || '生成翻译提示词失败');
-    }
+    // 直接使用AI进行翻译
+    const translationPrompt = `你是一位专业的翻译专家，请将以下文本翻译成中文。
+
+翻译要求：
+1. 使用正式的书面语表达
+2. 保持原文的语气和风格
+3. 确保专业术语的准确性
+4. 保留原文的格式和段落结构
+5. 适应中文的表达习惯和文化特点
+6. 对于专有名词：
+   - 若有官方翻译，使用官方翻译
+   - 若无官方翻译，保留原文并在首次出现时用括号标注解释
+7. 对于文化特定表达：
+   - 优先使用中文中的对应表达
+   - 若无对应表达，采用意译并在必要时添加解释
+8. 对于缩写和简称：
+   - 首次出现时给出完整翻译
+   - 后续可使用中文的对应缩写
+
+原文：
+${content}
+
+翻译：`;
     
     // 使用AI进行翻译
     const translationResponse = await chrome.runtime.sendMessage({
       type: 'GENERATE_SUMMARY',
-      content: response.prompt
+      content: translationPrompt
     });
     
     if (!translationResponse.success) {
@@ -828,10 +838,14 @@ async function handleTranslateText() {
     
     // 显示翻译结果
     showTranslation(translationResponse.summary);
+    
+    showProgress('翻译完成', 100);
+    setTimeout(() => {
+      hideProgress();
+    }, 1000);
   } catch (error) {
     console.error('Translation failed:', error);
     showError(getErrorMessage(error));
-  } finally {
     hideProgress();
   }
-} 
+}

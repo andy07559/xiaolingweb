@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
   "name": "小灵内容提取",
-  "version": "2.1",
+  "version": "2.3",
   "description": "智能提取网页核心内容，支持多种输出格式",
+  "author": "许文婷 <andy@590.net>",
   "permissions": [
     "activeTab",
     "scripting",
